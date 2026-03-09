@@ -19,13 +19,28 @@
                         <span>工作台概览</span>
                     </el-menu-item>
 
+                    <el-sub-menu index="/system">
+                        <template #title>
+                            <el-icon><Setting /></el-icon>
+                            <span>系统管理</span>
+                        </template>
+                        <el-menu-item index="/system/user">用户管理</el-menu-item>
+                        <el-menu-item index="/system/role">角色管理</el-menu-item>
+                        <el-menu-item index="/system/permission">权限管理</el-menu-item>
+                    </el-sub-menu>
+
+                    <el-menu-item index="/patient">
+                        <el-icon><Avatar /></el-icon>
+                        <span>患者管理</span>
+                    </el-menu-item>
+
                     <el-sub-menu index="/logs">
                         <template #title>
                             <el-icon><Document /></el-icon>
-                            <span>审计与日志</span>
+                            <span>日志与审计</span>
                         </template>
-                        <el-menu-item index="/logs/audit">操作审计</el-menu-item>
-                        <el-menu-item index="/logs/login">登录记录</el-menu-item>
+                        <el-menu-item index="/logs/audit">操作日志</el-menu-item>
+                        <el-menu-item index="/logs/login">登录日志</el-menu-item>
                     </el-sub-menu>
                 </el-menu>
             </el-scrollbar>

@@ -19,6 +19,29 @@ const router = createRouter({
                     name: 'Dashboard',
                     component: () => import('@/views/dashboard/index.vue')
                 },
+                // --- 系统管理 ---
+                {
+                    path: 'system/user',
+                    name: 'SystemUser',
+                    component: () => import('@/views/system/user/index.vue') // 你上一步已经写好的
+                },
+                {
+                    path: 'system/role',
+                    name: 'SystemRole',
+                    component: () => import('@/views/system/role/index.vue') // 本次新增
+                },
+                {
+                    path: 'system/permission',
+                    name: 'SystemPermission',
+                    component: () => import('@/views/system/permission/index.vue') // 本次新增
+                },
+                // --- 业务模块 ---
+                {
+                    path: 'patient',
+                    name: 'PatientManage',
+                    component: () => import('@/views/patient/index.vue') // 之前的患者模块
+                },
+                // --- 日志管理 ---
                 {
                     path: 'logs/audit',
                     name: 'AuditLogs',

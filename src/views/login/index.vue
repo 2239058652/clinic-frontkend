@@ -78,14 +78,15 @@ const handleLogin = () => {
             try {
                 const res: any = await loginApi(loginForm)
 
+                // 保存 NestJS 返回的完整凭证
                 localStorage.setItem('accessToken', res.accessToken)
                 localStorage.setItem('refreshToken', res.refreshToken)
                 localStorage.setItem('userInfo', JSON.stringify(res.user))
 
                 ElMessage({
-                    message: '身份验证成功，欢迎回来',
+                    message: `欢迎回来，${res.user.name || res.user.username}`,
                     type: 'success',
-                    customClass: 'glass-message' // 提示框也可以做点小优化
+                    customClass: 'glass-message'
                 })
                 router.push('/')
             } catch (error) {

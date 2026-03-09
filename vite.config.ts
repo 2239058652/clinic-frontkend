@@ -8,7 +8,6 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 export default defineConfig({
     plugins: [
         vue(),
-        // 自动导入 Element Plus 组件和 Vue API (ref, reactive等)
         AutoImport({
             imports: ['vue', 'vue-router'],
             resolvers: [ElementPlusResolver()],
@@ -21,15 +20,14 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, 'src') // 配置 @ 别名指向 src
+            '@': path.resolve(__dirname, 'src')
         }
     },
     server: {
         port: 3000,
         proxy: {
-            // 将 /api 开头的请求代理到你的 NestJS 后端
             '/api': {
-                target: 'http://localhost:3001',
+                target: 'http://localhost:3001', // 对应你的 NestJS 端口
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, '') // 去掉 /api 前缀
             }
