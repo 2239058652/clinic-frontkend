@@ -29,6 +29,7 @@
                     <template #default="{ row }">
                         <el-tag :type="row.status === 'ACTIVE' ? 'success' : 'danger'">
                             {{ row.status === 'ACTIVE' ? '启用' : '禁用' }}
+                            {{ row.status }}
                         </el-tag>
                     </template>
                 </el-table-column>
@@ -114,8 +115,8 @@ const fetchData = async () => {
     try {
         const params: any = cleanEmptyParams(queryParams)
         const res: any = await getUserListApi(params)
-        // 根据 Prisma 返回结构适配
-        tableData.value = res.data.list
+
+        tableData.value = res.list
         total.value = res.total || res.meta?.total || 0
     } catch (error) {
         console.error(error)
