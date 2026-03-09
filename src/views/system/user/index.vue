@@ -96,6 +96,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getUserListApi, createUserApi, deleteUserApi } from '@/api/system'
+import { cleanEmptyParams } from '@/utils'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -111,9 +112,10 @@ const queryParams = reactive({
 const fetchData = async () => {
     loading.value = true
     try {
-        const res: any = await getUserListApi(queryParams)
+        const params: any = cleanEmptyParams(queryParams)
+        const res: any = await getUserListApi(params)
         // 根据 Prisma 返回结构适配
-        tableData.value = res.items || res.data || res
+        tableData.value = res.data.list
         total.value = res.total || res.meta?.total || 0
     } catch (error) {
         console.error(error)

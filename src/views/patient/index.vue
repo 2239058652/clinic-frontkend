@@ -30,7 +30,7 @@
                 </el-table-column>
                 <el-table-column prop="gender" label="性别" width="80" align="center">
                     <template #default="scope">
-                        <el-tag :type="scope.row.gender === 'FEMALE' ? 'danger' : ''" effect="light" round>
+                        <el-tag :type="scope.row.gender === 'FEMALE' ? 'danger' : undefined" effect="light" round>
                             {{ scope.row.gender === 'FEMALE' ? '女' : '男' }}
                         </el-tag>
                     </template>
@@ -97,6 +97,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { getPatientListApi, addPatientApi } from '@/api/patient'
+import { cleanEmptyParams } from '@/utils'
 
 // 搜索条件对应你 NestJS 控制器的参数
 const queryParams = reactive({
@@ -113,7 +114,8 @@ const total = ref(0)
 const fetchData = async () => {
     loading.value = true
     try {
-        const res: any = await getPatientListApi(queryParams)
+        const params: any = cleanEmptyParams(queryParams)
+        const res: any = await getPatientListApi(params)
         // 根据你 NestJS Service 的返回结构调整，一般分页返回的是 [data, total] 或 { list, total }
         // 这里假设你的 patientsService.listPatients 返回的是 { items: [], total: 0 } 或 { data: [], total: 0 }
         tableData.value = res.items || res.data || res[0] || []

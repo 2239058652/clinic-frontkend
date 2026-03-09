@@ -20,7 +20,7 @@
                 <el-table-column prop="name" label="菜单/权限名称" width="220" />
                 <el-table-column prop="type" label="类型" width="100" align="center">
                     <template #default="{ row }">
-                        <el-tag :type="row.type === 'MENU' ? '' : 'warning'">
+                        <el-tag :type="row.type === 'MENU' ? undefined : 'warning'">
                             {{ row.type === 'MENU' ? '菜单' : '接口 API' }}
                         </el-tag>
                     </template>

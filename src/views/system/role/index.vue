@@ -69,7 +69,7 @@
                     <el-input v-model="formData.code" placeholder="如：ADMIN" :disabled="!!formData.id" />
                 </el-form-item>
                 <el-form-item label="描述" prop="description">
-                    <el-input v-model="formData.description" type="textarea" rows="3" />
+                    <el-input v-model="formData.description" type="textarea" :rows="3" />
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -93,7 +93,7 @@
                             <span>{{ node.label }}</span>
                             <el-tag
                                 size="small"
-                                :type="data.type === 'MENU' ? '' : 'warning'"
+                                :type="data.type === 'MENU' ? undefined : 'warning'"
                                 style="margin-left: 10px"
                             >
                                 {{ data.type === 'MENU' ? '菜单' : '接口' }}
@@ -113,6 +113,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
+import type { FormInstance, ElTree } from 'element-plus' // 引入 Element Plus 的类型
 import {
     getRoleListApi,
     createRoleApi,
@@ -122,6 +123,7 @@ import {
     getRolePermissionsApi,
     assignRolePermissionsApi
 } from '@/api/system'
+import { cleanEmptyParams } from '@/utils'
 
 // --- 表格数据 ---
 const loading = ref(false)
@@ -132,9 +134,11 @@ const queryParams = reactive({ page: 1, pageSize: 10, name: '' })
 const fetchData = async () => {
     loading.value = true
     try {
-        const res: any = await getRoleListApi(queryParams)
-        tableData.value = res.items || res.data || res
-        total.value = res.total || 0
+        const params: any = cleanEmptyParams(queryParams)
+        const res: any = await getRoleListApi(params)
+        // 修复1：对接后端 RoleService 返回的 { list, pagination } 结构
+        tableData.value = res.list || []
+        total.value = res.pagination?.total || 0
     } finally {
         loading.value = false
     }
@@ -149,7 +153,8 @@ const resetSearch = () => {
 // --- 增改弹窗 ---
 const dialogVisible = ref(false)
 const submitLoading = ref(false)
-const formRef = ref()
+// 修复2：为 formRef 添加 TS 类型，消除标红
+const formRef = ref<FormInstance>()
 const dialogTitle = ref('新增角色')
 const formData = reactive({ id: 0, name: '', code: '', description: '' })
 const rules = {
@@ -161,24 +166,35 @@ const openAddDialog = () => {
     dialogTitle.value = '新增角色'
     Object.assign(formData, { id: 0, name: '', code: '', description: '' })
     dialogVisible.value = true
+    // 清除校验状态
+    nextTick(() => formRef.value?.clearValidate())
 }
 
 const openEditDialog = (row: any) => {
     dialogTitle.value = '编辑角色'
     Object.assign(formData, { id: row.id, name: row.name, code: row.code, description: row.description })
     dialogVisible.value = true
+    nextTick(() => formRef.value?.clearValidate())
 }
 
 const submitForm = () => {
+    if (!formRef.value) return
     formRef.value.validate(async (valid: boolean) => {
         if (!valid) return
         submitLoading.value = true
         try {
+            // 修复3：由于后端启用了 forbidNonWhitelisted，必须剔除无关字段
+            const payload = {
+                name: formData.name,
+                code: formData.code,
+                description: formData.description
+            }
+
             if (formData.id) {
-                await updateRoleApi(formData.id, formData)
+                await updateRoleApi(formData.id, payload)
                 ElMessage.success('更新成功')
             } else {
-                await createRoleApi(formData)
+                await createRoleApi(payload)
                 ElMessage.success('创建成功')
             }
             dialogVisible.value = false
@@ -198,7 +214,8 @@ const handleDelete = async (id: number) => {
 // --- 分配权限逻辑 ---
 const drawerVisible = ref(false)
 const treeLoading = ref(false)
-const permissionTreeRef = ref()
+// 修复4：为 Tree 增加实例类型，避免 getCheckedKeys() 报错
+const permissionTreeRef = ref<InstanceType<typeof ElTree>>()
 const permissionTree = ref([])
 const currentRoleId = ref(0)
 
@@ -207,30 +224,28 @@ const openPermissionDrawer = async (row: any) => {
     drawerVisible.value = true
     treeLoading.value = true
     try {
-        // 1. 加载所有的权限树
         if (permissionTree.value.length === 0) {
             const res: any = await getPermissionTreeApi()
             permissionTree.value = res
         }
-        // 2. 加载当前角色拥有的权限
-        const rolePerms: any = await getRolePermissionsApi(row.id)
-        // 提取拥有的权限 ID 数组
-        const checkedKeys = rolePerms.map((p: any) => p.id || p.permissionId)
 
-        // 3. 回显到 Tree 上
+        const rolePerms: any = await getRolePermissionsApi(row.id)
+        // 从后端返回的 permissions 数组中提取 id
+        const checkedKeys = rolePerms.map((p: any) => p.id)
+
         await nextTick()
-        permissionTreeRef.value.setCheckedKeys(checkedKeys)
+        permissionTreeRef.value?.setCheckedKeys(checkedKeys)
     } finally {
         treeLoading.value = false
     }
 }
 
 const submitPermissions = async () => {
+    if (!permissionTreeRef.value) return
     submitLoading.value = true
     try {
-        // 获取半选和全选的节点 ID 提交给后端
-        const checkedKeys = permissionTreeRef.value.getCheckedKeys()
-        const halfCheckedKeys = permissionTreeRef.value.getHalfCheckedKeys()
+        const checkedKeys = permissionTreeRef.value.getCheckedKeys() as number[]
+        const halfCheckedKeys = permissionTreeRef.value.getHalfCheckedKeys() as number[]
         const allSelectedIds = [...checkedKeys, ...halfCheckedKeys]
 
         await assignRolePermissionsApi(currentRoleId.value, allSelectedIds)
