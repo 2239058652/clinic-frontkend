@@ -5,7 +5,7 @@ import router from '@/router'
 const isElectronProd = window.location.protocol === 'file:'
 
 const request = axios.create({
-    baseURL: isElectronProd ? 'http://localhost:3000' : '/api',
+    baseURL: isElectronProd ? 'http://localhost:3001' : '/api',
     timeout: 10000
 })
 
@@ -15,7 +15,7 @@ let requestsQueue: Array<() => void> = [] // 请求队列（收集刷新期间�
 
 // 创建一个独立的 axios 实例用于刷新 token，防止死循环
 const refreshAxios = axios.create({
-    baseURL: isElectronProd ? 'http://localhost:3000' : '/api',
+    baseURL: isElectronProd ? 'http://localhost:3001' : '/api',
     timeout: 5000
 })
 
