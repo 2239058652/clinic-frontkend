@@ -1,12 +1,41 @@
 {
+  "author": "22390",
+  "description": "Clinic Admin Desktop App",
   "name": "clinic-admin-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:web": "vite",
+    "build:web": "vue-tsc -b && vite build",
+    "dev:electron": "electron .",
+    "build:electron": "pnpm run build:web && electron-builder --win portable --x64"
+  },
+  "build": {
+    "appId": "com.clinic.admin",
+    "productName": "Clinic Admin",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "main.cjs",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
@@ -23,6 +52,8 @@
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.7.0",
     "@vue/tsconfig": "^0.8.1",
+    "electron": "^41.1.0",
+    "electron-builder": "^26.8.1",
     "eslint": "^10.0.3",
     "eslint-plugin-vue": "^10.8.0",
     "prettier": "^3.8.1",

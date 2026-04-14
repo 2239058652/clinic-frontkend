@@ -178,6 +178,8 @@ const submitForm = () => {
 }
 
 const openAssignRole = (row: any) => {
+    console.log('rowwwww', row)
+
     // 分配角色逻辑我们放在写“角色模块”时补全
     ElMessage.info('分配角色功能将在搭建角色模块后开放')
 }

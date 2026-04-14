@@ -1,0 +1,188 @@
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+@accessToken = 
+@refreshToken = 
+
+### =========================
+### 认证模块 auth
+### =========================
+
+### 登录
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 获取当前登录用户
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{accessToken}}
+
+### 退出登录
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{accessToken}}
+
+### 刷新 Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### =========================
+### 患者模块 patient
+### =========================
+
+### 获取患者列表
+GET {{baseUrl}}/patient/list?page=1&pageSize=10&name=
+Authorization: Bearer {{accessToken}}
+
+### 新增患者
+POST {{baseUrl}}/patient/add
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "张三",
+  "gender": "男",
+  "age": 28,
+  "phone": "13800138000",
+  "idCard": "370123199801011234",
+  "address": "山东省泰安市",
+  "remark": "初诊患者"
+}
+
+### =========================
+### 审计日志模块 logs
+### =========================
+
+### 获取审计日志列表
+GET {{baseUrl}}/logs/audit/logs?page=1&limit=10&module=
+Authorization: Bearer {{accessToken}}
+
+### 获取登录日志列表
+GET {{baseUrl}}/logs/login/logs?page=1&limit=10&status=
+Authorization: Bearer {{accessToken}}
+
+### =========================
+### 用户管理 users
+### =========================
+
+### 获取用户列表
+GET {{baseUrl}}/users?page=2
+Authorization: Bearer {{accessToken}}
+
+### 新增用户
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "username": "doctor01",
+  "password": "123456",
+  "nickname": "李医生",
+  "phone": "13900000001",
+  "email": "doctor01@test.com",
+  "status": 1
+}
+
+### 删除用户
+DELETE {{baseUrl}}/users/1
+Authorization: Bearer {{accessToken}}
+
+### 给用户分配角色
+POST {{baseUrl}}/users/1/roles
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "roleIds": [1, 2]
+}
+
+### =========================
+### 角色管理 roles
+### =========================
+
+### 获取角色列表
+GET {{baseUrl}}/roles?page=1&limit=10&name=
+Authorization: Bearer {{accessToken}}
+
+### 新增角色
+POST {{baseUrl}}/roles
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "医生",
+  "code": "doctor",
+  "description": "门诊医生角色"
+}
+
+### 修改角色
+PUT {{baseUrl}}/roles/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "主任医生",
+  "code": "chief_doctor",
+  "description": "主任医生角色"
+}
+
+### 删除角色
+DELETE {{baseUrl}}/roles/1
+Authorization: Bearer {{accessToken}}
+
+### 获取角色权限
+GET {{baseUrl}}/roles/1/permissions
+Authorization: Bearer {{accessToken}}
+
+### 给角色分配权限
+POST {{baseUrl}}/roles/1/permissions
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "permissionIds": [1, 2, 3, 4]
+}
+
+### =========================
+### 权限管理 permissions
+### =========================
+
+### 获取权限树
+GET {{baseUrl}}/permissions/tree
+Authorization: Bearer {{accessToken}}
+
+### 新增权限
+POST {{baseUrl}}/permissions
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "患者管理",
+  "code": "patient:manage",
+  "type": "menu",
+  "path": "/patient",
+  "parentId": 0
+}
+
+### 修改权限
+PUT {{baseUrl}}/permissions/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "患者列表",
+  "code": "patient:list",
+  "type": "button",
+  "path": "",
+  "parentId": 1
+}
+
+### 删除权限
+DELETE {{baseUrl}}/permissions/1
+Authorization: Bearer {{accessToken}}

@@ -6,6 +6,7 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
+    base: './',
     plugins: [
         vue(),
         AutoImport({
@@ -27,9 +28,9 @@ export default defineConfig({
         port: 3000,
         proxy: {
             '/api': {
-                target: 'http://localhost:3001', // 对应你的 NestJS 端口
+                target: 'http://localhost:3001',
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, '') // 去掉 /api 前缀
+                rewrite: (path) => path.replace(/^\/api/, '')
             }
         }
     }
